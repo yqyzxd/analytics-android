@@ -2,7 +2,7 @@ package com.wind.analytics
 
 import android.content.Context
 import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
+
 
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
@@ -15,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
  *  <author> <time> <version> <desc>
  *
  */
-class MEventDispatcher(private val context: Context) {
+class MEventDispatcher(private val context: Context):Ticker.OnIntervalListener{
     private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private val mDao: MEventDao = MEventDatabase.getInstance(context).eventDao()
@@ -28,7 +28,12 @@ class MEventDispatcher(private val context: Context) {
 
     private val mQueue = Queue
 
+    init {
+        mTicker.addIntervalListener(this)
+    }
+
     fun dispatch(event: MEventEntity) {
+
         mScope.launch(Dispatchers.IO) {
             when (event.type) {
                 MEventType.CLICK.ordinal -> {
@@ -102,5 +107,10 @@ class MEventDispatcher(private val context: Context) {
     companion object {
         const val INTERVAL = 15 * 60L
         const val THRESHOLD = 100
+    }
+
+
+    override fun onInterval() {
+        mQueue.enqueue(Queue.EventType.UPLOAD)
     }
 }
