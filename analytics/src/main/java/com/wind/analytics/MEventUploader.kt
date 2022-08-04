@@ -1,5 +1,9 @@
 package com.wind.analytics
 
+import android.content.Context
+import com.wind.mlog.ALog
+import com.wind.mlog.MLog
+import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.LinkedBlockingDeque
 
@@ -14,16 +18,53 @@ import java.util.concurrent.LinkedBlockingDeque
  *  <author> <time> <version> <desc>
  *
  */
-class MEventUploader(val mEventDao:MEventDao) : Queue.OnEventListener {
+class MEventUploader(private val context:Context,private val realUploader:IUploader,private val logger: ALog) : Queue.OnEventListener {
+    private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val mEventDao: MEventDao = MEventDatabase.getInstance(context).eventDao()
+
+
 
     override fun onEvent(event: Queue.EventType) {
         if (event != Queue.EventType.UPLOAD){
             return
         }
-        //todo 执行上传
-        println("upload events")
+        mScope.launch {
+            withContext(Dispatchers.IO){
+                val db=MEventDatabase.getInstance(context)
+                try {
+                    db.beginTransaction()
+                    val events=mEventDao.findByState(MEventState.READY.ordinal)
+                    if (events.isNotEmpty()){
+                        events.forEach { e->
+                            e.state = MEventState.UPLOADING.value
+                        }
+                        mEventDao.update(*events.toTypedArray())
+
+                        val response=realUploader.upload(events)
+                        logger.d("MEventUploader upload return code :${response.code}")
+
+                        //delete
+                        mEventDao.delete(*events.toTypedArray())
+                    }
+                    db.setTransactionSuccessful()
+                }catch (e:Exception){
+                    e.printStackTrace()
+                    logger.d("MEventUploader upload err occur :",e)
+                }finally {
+                    db.endTransaction()
+                }
+
+
+            }
+
+
+
+        }
+
 
     }
-
+    fun dispose() {
+        mScope.cancel()
+    }
 
 }

@@ -1,8 +1,6 @@
 package com.wind.analytics
 
 import android.content.Context
-import com.wind.mlog.ALog
-import com.wind.mlog.MLog
 
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
@@ -15,22 +13,19 @@ import com.wind.mlog.MLog
  *  <author> <time> <version> <desc>
  *
  */
-class MEvent {
+object MEvent {
 
     private lateinit var mAppContext: Context
-    private var sDebug = false
-    private var sLogger: ALog = MLog.getDefault()
+
     private lateinit var sDispatcher: MEventDispatcher
-    private var mUserInfoProvider: UserInfoProvider? = null
+    private var mUserInfoProvider: IUserInfoProvider? = null
 
-    fun install(context: Context) {
+    fun install(context: Context,config: Config) {
         mAppContext = context.applicationContext
-        sDispatcher = MEventDispatcher(mAppContext)
+        sDispatcher = MEventDispatcher(mAppContext,config)
+        mUserInfoProvider=config.userProvider
     }
 
-    fun registerUserInfoProvider(provider: UserInfoProvider) {
-        mUserInfoProvider = provider
-    }
 
     /**
      * 记录点击事件
@@ -45,7 +40,8 @@ class MEvent {
      * 开启调试模式
      */
     fun openDebug() {
-        sDebug = true
+        sDispatcher.enableLog()
+
     }
 
     /**

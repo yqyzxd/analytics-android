@@ -20,7 +20,7 @@ data class MEventEntity(
     @PrimaryKey(autoGenerate = true) val id:Int=0,
     @ColumnInfo(name = "event_id") val eventId:String,
     @ColumnInfo val uid:String,
-    @ColumnInfo val state:Int,// 事件状态（0未就绪/1已就绪/2已上传）
+    @ColumnInfo var state:Int,// 事件状态（0未就绪/1已就绪/2已上传）
     @ColumnInfo val begin:Long, //时长事件开始时间
     @ColumnInfo val end:Long, //时长事件结束时间
     @ColumnInfo val type:Int //事件类型 （0点击事件 / 1 时长事件）

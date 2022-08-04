@@ -11,7 +11,7 @@ package com.wind.analytics
  *  <author> <time> <version> <desc>
  *
  */
-enum class MEventState {
+enum class MEventState(val value: Int) {
 
-    INIT,READY,DONE
+    INIT(0),READY(1),DONE(2),UPLOADING(3)
 }

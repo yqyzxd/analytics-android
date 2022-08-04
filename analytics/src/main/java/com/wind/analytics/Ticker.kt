@@ -20,7 +20,7 @@ class Ticker(val interval:Long) {
     private val mHandler : Handler
     private val mTickerRunnable = TickerRunnable()
     private val mListeners = mutableSetOf<OnIntervalListener>()
-
+    private var mStarted = true
     init {
         mHandlerThread.start()
         mHandler = Handler(mHandlerThread.looper)
@@ -30,16 +30,30 @@ class Ticker(val interval:Long) {
 
     private fun startTicker() {
         mHandler.postDelayed(mTickerRunnable,interval)
+        mStarted=true
+    }
+    private fun stopTicker(){
+        mHandler.removeCallbacksAndMessages(null)
+        mStarted=false
     }
 
     fun addIntervalListener(lis :OnIntervalListener){
         mListeners.add(lis)
+        if (!mStarted){
+            startTicker()
+        }
     }
 
+    fun removeIntervalListener(lis :OnIntervalListener){
+        mListeners.remove(lis)
+
+        if (mListeners.isEmpty()){
+            stopTicker()
+        }
+    }
 
     inner class TickerRunnable : Runnable{
         override fun run() {
-            //执行操作
             mListeners.forEach {
                 it.onInterval()
             }
