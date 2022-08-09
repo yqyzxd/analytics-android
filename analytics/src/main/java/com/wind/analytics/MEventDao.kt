@@ -30,8 +30,6 @@ interface MEventDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(event: MEventEntity) :Long
 
-
-
     @Delete
     suspend fun delete(vararg events: MEventEntity)
 

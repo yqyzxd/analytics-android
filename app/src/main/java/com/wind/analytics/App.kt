@@ -1,6 +1,7 @@
 package com.wind.analytics
 
 import android.app.Application
+import com.wind.analytics.interfaces.IUserInfoProvider
 
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司

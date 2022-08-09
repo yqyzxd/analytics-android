@@ -1,11 +1,13 @@
-package com.wind.analytics
+package com.wind.analytics.impl
 
 import android.content.Context
+import com.wind.analytics.MEventDao
+import com.wind.analytics.MEventDatabase
+import com.wind.analytics.MEventState
+import com.wind.analytics.Queue
+import com.wind.analytics.interfaces.IUploader
 import com.wind.mlog.ALog
-import com.wind.mlog.MLog
 import kotlinx.coroutines.*
-import java.util.*
-import java.util.concurrent.LinkedBlockingDeque
 
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
@@ -18,7 +20,8 @@ import java.util.concurrent.LinkedBlockingDeque
  *  <author> <time> <version> <desc>
  *
  */
-class MEventUploader(private val context:Context,private val realUploader:IUploader,private val logger: ALog) : Queue.OnEventListener {
+class MEventUploader(private val context:Context, private val realUploader: IUploader, private val logger: ALog) :
+    Queue.OnEventListener {
     private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val mEventDao: MEventDao = MEventDatabase.getInstance(context).eventDao()
 
@@ -30,7 +33,7 @@ class MEventUploader(private val context:Context,private val realUploader:IUploa
         }
         mScope.launch {
             withContext(Dispatchers.IO){
-                val db=MEventDatabase.getInstance(context)
+                val db= MEventDatabase.getInstance(context)
                 try {
                     db.beginTransaction()
                     val events=mEventDao.findByState(MEventState.READY.ordinal)

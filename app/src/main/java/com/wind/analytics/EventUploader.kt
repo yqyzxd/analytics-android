@@ -1,5 +1,8 @@
 package com.wind.analytics
 
+import com.wind.analytics.interfaces.IUploader
+import com.wind.analytics.response.MUploadEventResponse
+
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
  * FileName: EventUploader
@@ -11,7 +14,7 @@ package com.wind.analytics
  *  <author> <time> <version> <desc>
  *
  */
-class EventUploader :IUploader {
+class EventUploader : IUploader {
     override suspend fun upload(events: List<MEventEntity>): MUploadEventResponse {
         println("EventUploader upload events :${events}")
         Thread.sleep(500)

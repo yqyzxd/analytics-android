@@ -1,4 +1,4 @@
-package com.wind.analytics
+package com.wind.analytics.impl
 
 import com.wind.mlog.ALog
 

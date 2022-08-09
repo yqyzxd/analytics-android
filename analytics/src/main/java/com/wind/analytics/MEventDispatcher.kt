@@ -1,6 +1,8 @@
 package com.wind.analytics
 
 import android.content.Context
+import com.wind.analytics.impl.MEventUploader
+import com.wind.analytics.impl.SystemOutLog
 import com.wind.mlog.ALog
 import com.wind.mlog.MLog
 import kotlinx.coroutines.*
@@ -166,7 +168,10 @@ class MEventDispatcher(private val context: Context,private val mConfig: Config)
             state = event.state,
             begin = exist.begin,
             end = event.end,
-            type = exist.type
+            type = exist.type,
+            ext = exist.ext,
+            os = exist.os,
+            phone = exist.phone
         )
     }
 

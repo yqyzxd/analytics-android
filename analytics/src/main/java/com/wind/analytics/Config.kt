@@ -1,5 +1,9 @@
 package com.wind.analytics
 
+import com.wind.analytics.impl.NullUploader
+import com.wind.analytics.interfaces.IUploader
+import com.wind.analytics.interfaces.IUserInfoProvider
+
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
  * FileName: Config

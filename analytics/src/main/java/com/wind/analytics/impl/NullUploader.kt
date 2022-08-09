@@ -1,4 +1,8 @@
-package com.wind.analytics
+package com.wind.analytics.impl
+
+import com.wind.analytics.MEventEntity
+import com.wind.analytics.interfaces.IUploader
+import com.wind.analytics.response.MUploadEventResponse
 
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
@@ -11,7 +15,7 @@ package com.wind.analytics
  *  <author> <time> <version> <desc>
  *
  */
-class NullUploader :IUploader {
+class NullUploader : IUploader {
     override suspend fun upload(events: List<MEventEntity>): MUploadEventResponse {
         return MUploadEventResponse(0)
     }

@@ -12,7 +12,5 @@ package com.wind.analytics
  *
  */
 enum class MEventType(val value: Int) {
-    CLICK(0),DURATION(1),INIT(-1)
-
-
+    CLICK(0), DURATION(1), INIT(-1)
 }

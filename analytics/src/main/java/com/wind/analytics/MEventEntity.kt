@@ -23,5 +23,8 @@ data class MEventEntity(
     @ColumnInfo var state:Int,// 事件状态（0未就绪/1已就绪/2已上传）
     @ColumnInfo val begin:Long, //时长事件开始时间
     @ColumnInfo val end:Long, //时长事件结束时间
-    @ColumnInfo val type:Int //事件类型 （0点击事件 / 1 时长事件）
+    @ColumnInfo val type:Int, //事件类型 （0点击事件 / 1 时长事件）
+    @ColumnInfo val ext:String ="", //该事件的额外信息 如有值必须为json格式 目前增加to_uid
+    @ColumnInfo val os:String ="android",
+    @ColumnInfo val phone:String ="" //手机具体型号
 )
