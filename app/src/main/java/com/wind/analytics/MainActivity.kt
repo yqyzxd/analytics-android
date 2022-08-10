@@ -1,6 +1,7 @@
 package com.wind.analytics
 
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -13,6 +14,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn).setOnClickListener {
             toSecAct()
         }
+
+        println("Build.VERSION.SDK_INT:${Build.VERSION.SDK_INT}")
+        println(" Build.VERSION.RELEASE:${ Build.VERSION.RELEASE}")
     }
 
     private fun toSecAct(){

@@ -12,5 +12,7 @@ package com.wind.analytics.interfaces
  *
  */
 interface IPhoneInfoProvider {
-    fun providePhoneInfo():String
+    fun providePhoneInfo():PhoneInfo
 }
+
+data class PhoneInfo(val manufacture:String, val model:String, val osVersion:String)

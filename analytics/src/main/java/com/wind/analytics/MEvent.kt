@@ -3,6 +3,7 @@ package com.wind.analytics
 import android.content.Context
 import com.wind.analytics.impl.DefaultPhoneInfoProvider
 import com.wind.analytics.interfaces.IUserInfoProvider
+import com.wind.analytics.interfaces.PhoneInfo
 import org.json.JSONObject
 
 /**
@@ -21,7 +22,7 @@ object MEvent {
     private lateinit var mAppContext: Context
     private lateinit var sDispatcher: MEventDispatcher
     private var mUserInfoProvider: IUserInfoProvider? = null
-    private var mPhoneModel: String = ""
+    private var mPhoneInfo: PhoneInfo?=null
 
     fun install(context: Context, config: Config) {
         mAppContext = context.applicationContext
@@ -102,10 +103,17 @@ object MEvent {
             jsonObject.toString()
         } else ""
 
-        if (mPhoneModel.isNullOrEmpty()){
+        if (mPhoneInfo==null){
             val provider= DefaultPhoneInfoProvider()
-            mPhoneModel = provider.providePhoneInfo()
+            mPhoneInfo = provider.providePhoneInfo()
         }
+        var phone=""
+        var version=""
+        mPhoneInfo?.apply {
+            phone= "$manufacture/$model"
+            version=osVersion
+        }
+
 
 
         return MEventEntity(
@@ -116,7 +124,8 @@ object MEvent {
             end = timestamp,
             type = type.value,
             ext = extJson,
-            phone = mPhoneModel
+            phone = phone,
+            version = version
         )
 
     }

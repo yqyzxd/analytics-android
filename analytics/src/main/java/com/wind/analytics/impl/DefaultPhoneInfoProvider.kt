@@ -2,6 +2,7 @@ package com.wind.analytics.impl
 
 import android.os.Build
 import com.wind.analytics.interfaces.IPhoneInfoProvider
+import com.wind.analytics.interfaces.PhoneInfo
 
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
@@ -15,13 +16,8 @@ import com.wind.analytics.interfaces.IPhoneInfoProvider
  *
  */
 class DefaultPhoneInfoProvider : IPhoneInfoProvider {
-    override fun providePhoneInfo(): String {
+    override fun providePhoneInfo(): PhoneInfo {
         //获取手机厂商 / 获取手机型号
-        val modelBuilder = StringBuilder()
-        modelBuilder
-            .append(Build.MANUFACTURER)
-            .append("/")
-            .append(Build.MODEL)
-        return modelBuilder.toString()
+        return PhoneInfo(Build.MANUFACTURER,Build.MODEL,Build.VERSION.RELEASE)
     }
 }
