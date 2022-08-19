@@ -31,6 +31,7 @@ class Config() {
     var uploader: IUploader = NullUploader()
     var callback: OnRunningStateCallback? = null
 
+    var enabled =true
     constructor(builder: Builder) : this() {
         this.intervalSec = builder.intervalSec
         this.durationIntervalSec = builder.durationIntervalSec
@@ -39,6 +40,7 @@ class Config() {
         this.userProvider = builder.userProvider
         this.callback = builder.callback
         this.saveCompletedEvent=builder.saveCompletedEvent
+        this.enabled=builder.enabled
         if (builder.uploader != null) {
             this.uploader = builder.uploader!!
         }
@@ -55,6 +57,8 @@ class Config() {
         var callback: OnRunningStateCallback? = null
         var channel: String = ""
         var saveCompletedEvent = false
+        var enabled =true
+
         fun interval(intervalSec: Long): Builder {
             this.intervalSec = intervalSec
             return this
@@ -92,6 +96,11 @@ class Config() {
 
         fun saveCompletedEvent(save:Boolean):Builder{
             this.saveCompletedEvent=save
+            return this
+        }
+
+        fun enabled(enabled:Boolean):Builder{
+            this.enabled=enabled
             return this
         }
 

@@ -25,10 +25,14 @@ object MEvent {
 
     private lateinit var sDispatcher: MEventDispatcher
     private lateinit var mEventBuilder: EventBuilder
-
+    private var mEnabled =true
 
     @JvmStatic
     fun install(application: Application, config: Config) {
+        mEnabled=config.enabled
+        if (!mEnabled){
+            return
+        }
         val appContext = application.applicationContext
         sDispatcher = MEventDispatcher(application, config)
         mEventBuilder = EventBuilder(appContext, config.userProvider, config.channel)
@@ -41,6 +45,9 @@ object MEvent {
     @JvmStatic
     @JvmOverloads
     fun onEvent(key: String, ext: Map<String, String>? = null) {
+        if (!mEnabled){
+            return
+        }
         sDispatcher.dispatch(
             buildEvent(
                 key,
@@ -62,12 +69,16 @@ object MEvent {
 
     }
 
+
     /**
      * 统计时长开始事件
      */
     @JvmStatic
     @JvmOverloads
     fun onPageStart(key: String, ext: Map<String, String>? = null) {
+        if (!mEnabled){
+            return
+        }
         sDispatcher.dispatch(
             buildEvent(
                 key,
@@ -84,6 +95,9 @@ object MEvent {
      */
     @JvmStatic
     fun onPageEnd(key: String) {
+        if (!mEnabled){
+            return
+        }
         sDispatcher.dispatch(
             buildEvent(
                 key,
