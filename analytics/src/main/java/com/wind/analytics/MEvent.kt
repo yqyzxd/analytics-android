@@ -1,9 +1,12 @@
 package com.wind.analytics
 
+import android.app.Application
 import android.content.Context
+import com.wind.analytics.bean.AppInfo
+import com.wind.analytics.bean.PhoneInfo
 import com.wind.analytics.impl.DefaultPhoneInfoProvider
-import com.wind.analytics.interfaces.IUserInfoProvider
-import com.wind.analytics.interfaces.PhoneInfo
+import com.wind.analytics.interfaces.IProvider
+
 import org.json.JSONObject
 
 /**
@@ -19,17 +22,15 @@ import org.json.JSONObject
  */
 object MEvent {
 
-    private lateinit var mAppContext: Context
+
     private lateinit var sDispatcher: MEventDispatcher
-    private var mUserInfoProvider: IUserInfoProvider? = null
-    private var mPhoneInfo: PhoneInfo?=null
-
-    fun install(context: Context, config: Config) {
-        mAppContext = context.applicationContext
-        sDispatcher = MEventDispatcher(mAppContext, config)
-        mUserInfoProvider = config.userProvider
+    private lateinit var mEventBuilder: EventBuilder
 
 
+    fun install(application: Application, config: Config) {
+        val appContext = application.applicationContext
+        sDispatcher = MEventDispatcher(application, config)
+        mEventBuilder = EventBuilder(appContext, config.userProvider, config.channel)
     }
 
 
@@ -96,38 +97,8 @@ object MEvent {
         type: MEventType,
         ext: Map<String, String>? = null
     ): MEventEntity {
-        val uid = mUserInfoProvider?.provideUserInfo() ?: ""
 
-        val extJson = if (ext.isNullOrEmpty().not()) {
-            val jsonObject = JSONObject(ext)
-            jsonObject.toString()
-        } else ""
-
-        if (mPhoneInfo==null){
-            val provider= DefaultPhoneInfoProvider()
-            mPhoneInfo = provider.providePhoneInfo()
-        }
-        var phone=""
-        var version=""
-        mPhoneInfo?.apply {
-            phone= "$manufacture/$model"
-            version=osVersion
-        }
-
-
-
-        return MEventEntity(
-            eventId = key,
-            uid = uid,
-            state = state.value,
-            begin = timestamp,
-            end = timestamp,
-            type = type.value,
-            ext = extJson,
-            phone = phone,
-            version = version
-        )
-
+        return mEventBuilder.build(key, state, timestamp, type, ext)
     }
 
 }

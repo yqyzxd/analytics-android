@@ -1,8 +1,8 @@
 package com.wind.analytics.impl
 
 import android.os.Build
-import com.wind.analytics.interfaces.IPhoneInfoProvider
-import com.wind.analytics.interfaces.PhoneInfo
+import com.wind.analytics.bean.PhoneInfo
+import com.wind.analytics.interfaces.IProvider
 
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
@@ -15,8 +15,8 @@ import com.wind.analytics.interfaces.PhoneInfo
  *  <author> <time> <version> <desc>
  *
  */
-class DefaultPhoneInfoProvider : IPhoneInfoProvider {
-    override fun providePhoneInfo(): PhoneInfo {
+class DefaultPhoneInfoProvider : IProvider<PhoneInfo> {
+    override fun provide(): PhoneInfo {
         //获取手机厂商 / 获取手机型号
         return PhoneInfo(Build.MANUFACTURER,Build.MODEL,Build.VERSION.RELEASE)
     }

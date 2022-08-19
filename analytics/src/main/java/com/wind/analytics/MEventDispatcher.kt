@@ -1,8 +1,9 @@
 package com.wind.analytics
 
-import android.content.Context
+import android.app.Application
 import com.wind.analytics.impl.MEventUploader
 import com.wind.analytics.impl.SystemOutLog
+import com.wind.analytics.interfaces.OnRunningStateCallback
 import com.wind.mlog.ALog
 import com.wind.mlog.MLog
 import kotlinx.coroutines.*
@@ -19,10 +20,10 @@ import kotlinx.coroutines.*
  *  <author> <time> <version> <desc>
  *
  */
-class MEventDispatcher(private val context: Context,private val mConfig: Config) : Ticker.OnIntervalListener {
+class MEventDispatcher(private val application: Application,private val mConfig: Config) : Ticker.OnIntervalListener {
     private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-    private val mDao: MEventDao = MEventDatabase.getInstance(context).eventDao()
+    private val mDao: MEventDao = MEventDatabase.getInstance(application.applicationContext).eventDao()
 
     private val mKeyMap = mutableMapOf<String, Int>()
 
@@ -36,15 +37,27 @@ class MEventDispatcher(private val context: Context,private val mConfig: Config)
 
     private var mLogger: ALog = MLog()
 
-    private val mEventUploader = MEventUploader(context,mConfig.uploader,mLogger)
+    private val mEventUploader = MEventUploader(application.applicationContext,mConfig.uploader,mLogger)
+    private val mActivityLifecycleCallback = ActivityLifecycleCallback(application)
 
     init {
-
         mUploadTicker.addIntervalListener(this)
         mQueue.register(mEventUploader)
         (mLogger as MLog).register(SystemOutLog())
         mLogger.setEnabled(false)
 
+        mActivityLifecycleCallback.registerOnBackgroundCallback(object :OnRunningStateCallback{
+            override fun onBackground() {
+                mLogger.d("MEventDispatcher","onBackground")
+                stopTicker()
+                onInterval()
+            }
+
+            override fun onForeground() {
+                startTicker()
+            }
+
+        })
         //发送init事件
         dispatch(
             MEventEntity(
@@ -56,6 +69,17 @@ class MEventDispatcher(private val context: Context,private val mConfig: Config)
                 eventId = ""
             )
         )
+    }
+
+
+    private fun startTicker() {
+        mLogger.d(TAG,"startTicker")
+        mUploadTicker.startTicker()
+    }
+
+    private fun stopTicker() {
+        mLogger.d(TAG,"stopTicker")
+        mUploadTicker.stopTicker()
     }
 
     fun dispatch(event: MEventEntity) {
@@ -156,7 +180,7 @@ class MEventDispatcher(private val context: Context,private val mConfig: Config)
                 }
             }
         }
-        mLogger.d("Exit startOrStopDurationTicker")
+        mLogger.d("Exit startOrStopDurationTicker mListenerMap.size:${mListenerMap.size}")
     }
 
 
@@ -171,7 +195,9 @@ class MEventDispatcher(private val context: Context,private val mConfig: Config)
             type = exist.type,
             ext = exist.ext,
             os = exist.os,
-            phone = exist.phone
+            phone = exist.phone,
+            appVersion = exist.appVersion,
+            channel = exist.channel
         )
     }
 
@@ -196,7 +222,12 @@ class MEventDispatcher(private val context: Context,private val mConfig: Config)
                                 state = exist.state,
                                 begin = exist.begin,
                                 end = System.currentTimeMillis(),
-                                type = exist.type
+                                type = exist.type,
+                                ext = exist.ext,
+                                os = exist.os,
+                                phone = exist.phone,
+                                appVersion = exist.appVersion,
+                                channel = exist.channel
                             )
                             mLogger.d("DurationListener onInterval update:${newEvent}")
                             mDao.update(newEvent)
@@ -229,5 +260,10 @@ class MEventDispatcher(private val context: Context,private val mConfig: Config)
 
     fun enableLog() {
         mLogger.setEnabled(true)
+    }
+
+
+    companion object{
+        val TAG =  "MEventDispatcher"
     }
 }

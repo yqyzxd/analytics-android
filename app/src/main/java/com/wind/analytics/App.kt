@@ -1,7 +1,7 @@
 package com.wind.analytics
 
 import android.app.Application
-import com.wind.analytics.interfaces.IUserInfoProvider
+import com.wind.analytics.interfaces.IProvider
 
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
@@ -21,8 +21,8 @@ class App : Application() {
 
         val config = Config
             .newBuilder()
-            .userProvider(object : IUserInfoProvider {
-                override fun provideUserInfo(): String {
+            .userProvider(object : IProvider<String> {
+                override fun provide(): String {
                     return "61266"
                 }
             })

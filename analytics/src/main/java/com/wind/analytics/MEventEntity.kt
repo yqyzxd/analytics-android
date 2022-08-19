@@ -27,5 +27,8 @@ data class MEventEntity(
     @ColumnInfo val ext:String ="", //该事件的额外信息 如有值必须为json格式 目前增加to_uid
     @ColumnInfo val os:String ="android",
     @ColumnInfo val phone:String ="", //手机具体型号
-    @ColumnInfo val version:String ="" //手机操作系统版本
+    @ColumnInfo val version:String ="", //手机操作系统版本
+    @ColumnInfo(name = "app_version") val appVersion:String ="", //app版本
+    @ColumnInfo val channel:String ="" //渠道号
+
 )

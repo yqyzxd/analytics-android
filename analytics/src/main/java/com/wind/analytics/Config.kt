@@ -1,8 +1,9 @@
 package com.wind.analytics
 
 import com.wind.analytics.impl.NullUploader
+import com.wind.analytics.interfaces.IProvider
 import com.wind.analytics.interfaces.IUploader
-import com.wind.analytics.interfaces.IUserInfoProvider
+import com.wind.analytics.interfaces.OnRunningStateCallback
 
 /**
  * Copyright (C), 2015-2022, 杭州迈优文化创意有限公司
@@ -23,16 +24,19 @@ class Config() {
     var durationIntervalSec: Long = DURATION_INTERVAL_SEC
     var threshold: Int = THRESHOLD
 
-    var userProvider: IUserInfoProvider? = null
+    var channel: String = ""
+
+    var userProvider: IProvider<String>? = null
     var uploader: IUploader = NullUploader()
+    var callback: OnRunningStateCallback? = null
 
     constructor(builder: Builder) : this() {
         this.intervalSec = builder.intervalSec
         this.durationIntervalSec = builder.durationIntervalSec
         this.threshold = builder.threshold
-
+        this.channel = builder.channel
         this.userProvider = builder.userProvider
-
+        this.callback = builder.callback
         if (builder.uploader != null) {
             this.uploader = builder.uploader!!
         }
@@ -40,14 +44,14 @@ class Config() {
     }
 
 
-
     class Builder {
         var intervalSec: Long = INTERVAL_SEC
         var durationIntervalSec: Long = DURATION_INTERVAL_SEC
         var threshold: Int = THRESHOLD
-        var userProvider: IUserInfoProvider? = null
+        var userProvider: IProvider<String>? = null
         var uploader: IUploader? = null
-
+        var callback: OnRunningStateCallback? = null
+        var channel: String = ""
         fun interval(intervalSec: Long): Builder {
             this.intervalSec = intervalSec
             return this
@@ -63,7 +67,7 @@ class Config() {
             return this
         }
 
-        fun userProvider(userProvider: IUserInfoProvider): Builder {
+        fun userProvider(userProvider: IProvider<String>): Builder {
             this.userProvider = userProvider
             return this
         }
@@ -73,6 +77,15 @@ class Config() {
             return this
         }
 
+        fun backgroundCallback(callback: OnRunningStateCallback): Builder {
+            this.callback = callback
+            return this
+        }
+
+        fun channel(channel: String): Builder {
+            this.channel = channel
+            return this
+        }
 
         fun build(): Config {
             return Config(this)
