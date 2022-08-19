@@ -27,6 +27,7 @@ object MEvent {
     private lateinit var mEventBuilder: EventBuilder
 
 
+    @JvmStatic
     fun install(application: Application, config: Config) {
         val appContext = application.applicationContext
         sDispatcher = MEventDispatcher(application, config)
@@ -37,6 +38,7 @@ object MEvent {
     /**
      * 记录点击事件
      */
+    @JvmStatic
     @JvmOverloads
     fun onEvent(key: String, ext: Map<String, String>? = null) {
         sDispatcher.dispatch(
@@ -54,6 +56,7 @@ object MEvent {
     /**
      * 开启调试模式
      */
+    @JvmStatic
     fun openDebug() {
         sDispatcher.enableLog()
 
@@ -62,6 +65,7 @@ object MEvent {
     /**
      * 统计时长开始事件
      */
+    @JvmStatic
     @JvmOverloads
     fun onPageStart(key: String, ext: Map<String, String>? = null) {
         sDispatcher.dispatch(
@@ -78,6 +82,7 @@ object MEvent {
     /**
      * 统计时长结束事件
      */
+    @JvmStatic
     fun onPageEnd(key: String) {
         sDispatcher.dispatch(
             buildEvent(

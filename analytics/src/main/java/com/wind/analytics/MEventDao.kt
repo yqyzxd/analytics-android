@@ -33,6 +33,9 @@ interface MEventDao {
     @Delete
     suspend fun delete(vararg events: MEventEntity)
 
+    @Query("DELETE FROM mu_analytics WHERE state = 2")
+    suspend fun deleteCompleteEvents()
+
     @Query("SELECT count(*) FROM mu_analytics")
     suspend fun count():Int
 
@@ -41,4 +44,5 @@ interface MEventDao {
 
     @Update
     suspend fun update(vararg events: MEventEntity):Int
+
 }

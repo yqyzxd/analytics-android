@@ -25,6 +25,7 @@ class Config() {
     var threshold: Int = THRESHOLD
 
     var channel: String = ""
+    var saveCompletedEvent = false
 
     var userProvider: IProvider<String>? = null
     var uploader: IUploader = NullUploader()
@@ -37,6 +38,7 @@ class Config() {
         this.channel = builder.channel
         this.userProvider = builder.userProvider
         this.callback = builder.callback
+        this.saveCompletedEvent=builder.saveCompletedEvent
         if (builder.uploader != null) {
             this.uploader = builder.uploader!!
         }
@@ -52,6 +54,7 @@ class Config() {
         var uploader: IUploader? = null
         var callback: OnRunningStateCallback? = null
         var channel: String = ""
+        var saveCompletedEvent = false
         fun interval(intervalSec: Long): Builder {
             this.intervalSec = intervalSec
             return this
@@ -84,6 +87,11 @@ class Config() {
 
         fun channel(channel: String): Builder {
             this.channel = channel
+            return this
+        }
+
+        fun saveCompletedEvent(save:Boolean):Builder{
+            this.saveCompletedEvent=save
             return this
         }
 

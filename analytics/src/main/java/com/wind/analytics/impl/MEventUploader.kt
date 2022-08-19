@@ -20,7 +20,7 @@ import kotlinx.coroutines.*
  *  <author> <time> <version> <desc>
  *
  */
-class MEventUploader(private val context:Context, private val realUploader: IUploader, private val logger: ALog) :
+class MEventUploader(private val context:Context, private val realUploader: IUploader, private val saveCompletedEvent:Boolean,private val logger: ALog) :
     Queue.OnEventListener {
     private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val mEventDao: MEventDao = MEventDatabase.getInstance(context).eventDao()
@@ -46,8 +46,16 @@ class MEventUploader(private val context:Context, private val realUploader: IUpl
                         val response=realUploader.upload(events)
                         logger.d("MEventUploader upload return code :${response.code}")
 
-                        //delete
-                        mEventDao.delete(*events.toTypedArray())
+                        events.forEach { e->
+                            e.state = MEventState.DONE.value
+                        }
+                        mEventDao.update(*events.toTypedArray())
+                        if (!saveCompletedEvent){
+                            //delete
+                            //mEventDao.delete(*events.toTypedArray())
+                            mEventDao.deleteCompleteEvents()
+                        }
+
                     }
                     db.setTransactionSuccessful()
                 }catch (e:Exception){

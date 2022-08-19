@@ -13,7 +13,7 @@ import com.wind.mlog.ALog
  *  <author> <time> <version> <desc>
  *
  */
-class SystemOutLog() : ALog() {
+class SystemOutLog : ALog() {
     private var sBuilder: StringBuilder = StringBuilder()
 
 

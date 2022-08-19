@@ -37,7 +37,7 @@ class MEventDispatcher(private val application: Application,private val mConfig:
 
     private var mLogger: ALog = MLog()
 
-    private val mEventUploader = MEventUploader(application.applicationContext,mConfig.uploader,mLogger)
+    private val mEventUploader = MEventUploader(application.applicationContext,mConfig.uploader,mConfig.saveCompletedEvent,mLogger)
     private val mActivityLifecycleCallback = ActivityLifecycleCallback(application)
 
     init {
