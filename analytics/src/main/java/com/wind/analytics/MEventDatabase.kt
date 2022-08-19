@@ -17,7 +17,7 @@ import androidx.room.RoomDatabase
  *  作者姓名  修改时间   版本号     描述
  *
  */
-@Database(entities = [MEventEntity::class],version = 2,exportSchema = false)
+@Database(entities = [MEventEntity::class],version = 1,exportSchema = false)
 abstract class MEventDatabase :RoomDatabase(){
 
     abstract fun eventDao():MEventDao
@@ -37,7 +37,7 @@ abstract class MEventDatabase :RoomDatabase(){
             return Room.databaseBuilder(
                 context.applicationContext,
                 MEventDatabase::class.java,
-                "mu_room_db"
+                "mu_event_db"
             ).build()
         }
     }
