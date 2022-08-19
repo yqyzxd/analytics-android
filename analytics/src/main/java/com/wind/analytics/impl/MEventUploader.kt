@@ -44,7 +44,7 @@ class MEventUploader(private val context:Context, private val realUploader: IUpl
                         mEventDao.update(*events.toTypedArray())
 
                         val response=realUploader.upload(events)
-                        logger.d("MEventUploader upload return code :${response.code}")
+                        logger.d("MEventDispatcher","MEventUploader upload return code :${response.code}")
 
                         events.forEach { e->
                             e.state = MEventState.DONE.value

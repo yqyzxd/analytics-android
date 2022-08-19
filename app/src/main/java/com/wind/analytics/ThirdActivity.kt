@@ -31,12 +31,12 @@ class ThirdActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        MEvent.onPageStart("third_act")
+        MEvent.onPageStart("during")
     }
 
     override fun onPause() {
         super.onPause()
-        MEvent.onPageEnd("third_act")
+        MEvent.onPageEnd("during")
 
     }
 }

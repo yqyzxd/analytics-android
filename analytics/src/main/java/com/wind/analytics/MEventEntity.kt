@@ -31,4 +31,42 @@ data class MEventEntity(
     @ColumnInfo(name = "app_version") val appVersion:String ="", //app版本
     @ColumnInfo val channel:String ="" //渠道号
 
-)
+){
+
+    fun ofEnd(end:Long):MEventEntity{
+        return MEventEntity(
+            id = this.id,
+            eventId = this.eventId,
+            uid = this.uid,
+            state = this.state,
+            begin = this.begin,
+            end = end,
+            type = this.type,
+            ext = this.ext,
+            os = this.os,
+            phone = this.phone,
+            appVersion = this.appVersion,
+            channel = this.channel,
+            version = this.version
+        )
+    }
+
+    fun ofState(state:Int):MEventEntity{
+        return  MEventEntity(
+            id = this.id,
+            eventId = this.eventId,
+            uid = this.uid,
+            state = state,
+            begin = this.begin,
+            end = this.end,
+            type = this.type,
+            ext = this.ext,
+            os = this.os,
+            phone = this.phone,
+            appVersion = this.appVersion,
+            channel = this.channel,
+            version = this.version
+        )
+    }
+
+}

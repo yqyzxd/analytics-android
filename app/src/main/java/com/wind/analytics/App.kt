@@ -1,6 +1,7 @@
 package com.wind.analytics
 
 import android.app.Application
+import android.content.Intent
 import com.wind.analytics.interfaces.IProvider
 
 /**
@@ -21,6 +22,7 @@ class App : Application() {
 
         val config = Config
             .newBuilder()
+            .saveCompletedEvent(true)
             .userProvider(object : IProvider<String> {
                 override fun provide(): String {
                     return "61266"

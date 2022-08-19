@@ -27,12 +27,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        MEvent.onPageStart("main_act")
+        MEvent.onPageStart("during")
     }
 
     override fun onPause() {
         super.onPause()
-        MEvent.onPageEnd("main_act")
+        MEvent.onPageEnd("during")
 
     }
 }

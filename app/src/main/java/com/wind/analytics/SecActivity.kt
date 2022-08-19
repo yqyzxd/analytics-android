@@ -31,12 +31,12 @@ class SecActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        MEvent.onPageStart("sec_act")
+        MEvent.onPageStart("during")
     }
 
     override fun onPause() {
         super.onPause()
-        MEvent.onPageEnd("sec_act")
+        MEvent.onPageEnd("during")
 
     }
 }

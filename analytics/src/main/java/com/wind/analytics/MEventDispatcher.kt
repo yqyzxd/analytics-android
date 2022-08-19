@@ -1,6 +1,7 @@
 package com.wind.analytics
 
 import android.app.Application
+import com.wind.analytics.impl.AndroidLog
 import com.wind.analytics.impl.MEventUploader
 import com.wind.analytics.impl.SystemOutLog
 import com.wind.analytics.interfaces.OnRunningStateCallback
@@ -43,7 +44,7 @@ class MEventDispatcher(private val application: Application,private val mConfig:
     init {
         mUploadTicker.addIntervalListener(this)
         mQueue.register(mEventUploader)
-        (mLogger as MLog).register(SystemOutLog())
+        (mLogger as MLog).register(AndroidLog())
         mLogger.setEnabled(false)
 
         mActivityLifecycleCallback.registerOnBackgroundCallback(object :OnRunningStateCallback{
@@ -125,37 +126,38 @@ class MEventDispatcher(private val application: Application,private val mConfig:
     }
 
     private suspend fun onDurationEventInit(event: MEventEntity) {
-        mLogger.d("Enter onDurationEventInit")
+        mLogger.d(TAG,"Enter onDurationEventInit")
         val id = mDao.insert(event)
-        mLogger.d("onDurationEventInit generated id :$id")
+        mLogger.d(TAG,"onDurationEventInit generated id :$id")
         //存入id
         mKeyMap[event.eventId] = id.toInt()
-        mLogger.d("Exit onDurationEventInit")
+        mLogger.d(TAG,"Exit onDurationEventInit")
 
     }
 
     private suspend fun onDurationEventReady(event: MEventEntity) {
-        mLogger.d("Enter onDurationEventReady")
+        mLogger.d(TAG,"Enter onDurationEventReady")
         val id = mKeyMap[event.eventId]
 
         if (id == null) {
-            mLogger.e("onDurationEventReady id is null !!!")
+            mLogger.e(TAG,"onDurationEventReady id is null !!!")
         } else {
             mDao.findById(id)?.apply {
                 val newEvent = updateEventWithStateAndEnd(this, event)
                 mDao.update(newEvent)
-                mLogger.d("onDurationEventReady update event success")
+                mLogger.d(TAG,"onDurationEventReady update event success")
             }
         }
         mKeyMap.remove(event.eventId)
-        mLogger.d("Exit onDurationEventReady")
+        mLogger.d(TAG,"Exit onDurationEventReady")
     }
 
     private fun startOrStopDurationTicker(event: MEventEntity) {
-        mLogger.d("Enter startOrStopDurationTicker")
+
         when (event.type) {
 
             MEventType.DURATION.value -> {
+                mLogger.d(TAG,"Enter startOrStopDurationTicker for ${event.eventId} ${event.ext}")
                 when (event.state) {
                     MEventState.INIT.value -> {
                         //启动duration_ticker
@@ -163,7 +165,7 @@ class MEventDispatcher(private val application: Application,private val mConfig:
                         if (listener == null) {
                             listener = DurationListener(event.eventId)
                         }
-                        mLogger.d("Exit startOrStopDurationTicker addIntervalListener")
+                        mLogger.d(TAG,"Exit startOrStopDurationTicker addIntervalListener")
                         mDurationEventTicker.addIntervalListener(listener)
                         mListenerMap[event.eventId] = listener
 
@@ -172,69 +174,45 @@ class MEventDispatcher(private val application: Application,private val mConfig:
                         //结束duration_ticker
                         var listener = mListenerMap[event.eventId]
                         if (listener != null) {
-                            mLogger.d("Exit startOrStopDurationTicker removeIntervalListener")
+                            mLogger.d(TAG,"Exit startOrStopDurationTicker removeIntervalListener")
                             mDurationEventTicker.removeIntervalListener(listener)
                         }
                         mListenerMap.remove(event.eventId)
                     }
                 }
+                mLogger.d(TAG,"Exit startOrStopDurationTicker mListenerMap.size:${mListenerMap.size}")
             }
         }
-        mLogger.d("Exit startOrStopDurationTicker mListenerMap.size:${mListenerMap.size}")
+
     }
 
 
     private fun updateEventWithStateAndEnd(exist: MEventEntity, event: MEventEntity): MEventEntity {
-        return MEventEntity(
-            id = exist.id,
-            eventId = exist.eventId,
-            uid = exist.uid,
-            state = event.state,
-            begin = exist.begin,
-            end = event.end,
-            type = exist.type,
-            ext = exist.ext,
-            os = exist.os,
-            phone = exist.phone,
-            appVersion = exist.appVersion,
-            channel = exist.channel
-        )
+       return exist.ofEnd(event.end).ofState(event.state)
+
     }
 
     private inner class DurationListener(private val eventId: String) : Ticker.OnIntervalListener {
         override fun onInterval() {
             //更新eventId 对应的duration时间的end time
-            mLogger.d("Enter DurationListener onInterval")
+            mLogger.d(TAG,"Enter DurationListener onInterval")
             //查询出eventId并且状态为init的事件更新其 end time 为当前时间
             mScope.launch(Dispatchers.IO) {
                 val id = mKeyMap[eventId]
 
                 if (id == null) {
                     //log
-                    mLogger.e("DurationListener onInterval id is null !!!")
+                    mLogger.e(TAG,"DurationListener onInterval id is null !!!")
                 } else {
                     mDao.findById(id)?.let { exist ->
                         if (exist.state == MEventState.INIT.value) {
-                            val newEvent = MEventEntity(
-                                id = exist.id,
-                                eventId = exist.eventId,
-                                uid = exist.uid,
-                                state = exist.state,
-                                begin = exist.begin,
-                                end = System.currentTimeMillis(),
-                                type = exist.type,
-                                ext = exist.ext,
-                                os = exist.os,
-                                phone = exist.phone,
-                                appVersion = exist.appVersion,
-                                channel = exist.channel
-                            )
-                            mLogger.d("DurationListener onInterval update:${newEvent}")
+                            val newEvent = exist.ofEnd(System.currentTimeMillis())
+                            mLogger.d(TAG,"DurationListener onInterval update:${newEvent}")
                             mDao.update(newEvent)
                         }
                     }
                 }
-                mLogger.d("Exit DurationListener onInterval")
+                mLogger.d(TAG,"Exit DurationListener onInterval")
             }
 
         }
@@ -254,7 +232,7 @@ class MEventDispatcher(private val application: Application,private val mConfig:
 
 
     override fun onInterval() {
-        mLogger.d("MEventDispatcher onInterval UPLOAD")
+        mLogger.d(TAG,"MEventDispatcher onInterval UPLOAD")
         mQueue.enqueue(Queue.EventType.UPLOAD)
     }
 
