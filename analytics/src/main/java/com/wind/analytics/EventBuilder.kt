@@ -26,11 +26,10 @@ class EventBuilder(
 ) {
 
 
-    private var mPhoneInfo: PhoneInfo
+    private var mPhoneInfo: PhoneInfo = DefaultPhoneInfoProvider().provide()
     private var mAppInfo: AppInfo
 
     init {
-        mPhoneInfo = DefaultPhoneInfoProvider().provide()
 
         //获取app版本号  和 渠道号
         val provider = AppInfoProvider(mContext, mChannel)
@@ -39,6 +38,10 @@ class EventBuilder(
 
     }
 
+    fun filter():Boolean{
+        val uid = mUserInfoProvider?.provide() ?: ""
+        return uid.isNullOrEmpty()
+    }
 
     fun build(
         key: String,

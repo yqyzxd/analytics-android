@@ -48,6 +48,10 @@ object MEvent {
         if (!mEnabled){
             return
         }
+
+        if (mEventBuilder.filter()){
+            return
+        }
         sDispatcher.dispatch(
             buildEvent(
                 key,
@@ -79,6 +83,9 @@ object MEvent {
         if (!mEnabled){
             return
         }
+        if (mEventBuilder.filter()){
+            return
+        }
         sDispatcher.dispatch(
             buildEvent(
                 key,
@@ -96,6 +103,9 @@ object MEvent {
     @JvmStatic
     fun onPageEnd(key: String) {
         if (!mEnabled){
+            return
+        }
+        if (mEventBuilder.filter()){
             return
         }
         sDispatcher.dispatch(
