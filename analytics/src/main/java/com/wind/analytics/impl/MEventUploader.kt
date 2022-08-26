@@ -24,13 +24,14 @@ class MEventUploader(private val context:Context, private val realUploader: IUpl
     Queue.OnEventListener {
     private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val mEventDao: MEventDao = MEventDatabase.getInstance(context).eventDao()
-
+    private var mUploading = false
 
 
     override fun onEvent(event: Queue.EventType) {
-        if (event != Queue.EventType.UPLOAD){
+        if (event != Queue.EventType.UPLOAD || mUploading){
             return
         }
+        mUploading= true
         mScope.launch {
             withContext(Dispatchers.IO){
                 val db= MEventDatabase.getInstance(context)
@@ -63,6 +64,7 @@ class MEventUploader(private val context:Context, private val realUploader: IUpl
                     logger.d("MEventUploader upload err occur :",e)
                 }finally {
                     db.endTransaction()
+                    mUploading= false
                 }
 
 
