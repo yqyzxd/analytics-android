@@ -63,7 +63,19 @@ class MEventUploader(private val context:Context, private val realUploader: IUpl
                     e.printStackTrace()
                     logger.d("MEventUploader upload err occur :",e)
                 }finally {
-                    db.endTransaction()
+                    try {
+                        /**
+                         * java.lang.IllegalStateException
+                            Cannot perform this operation because there is no current transaction.
+                         */
+                        if (db.inTransaction()){
+                            db.endTransaction()
+                        }
+                    }catch (ex:Exception){
+                        ex.printStackTrace()
+                    }
+
+
                     mUploading= false
                 }
 
