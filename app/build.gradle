@@ -42,5 +42,4 @@ dependencies {
     debugImplementation ('com.github.amitshekhariitbhu.Android-Debug-Database:debug-db:v1.0.6'){
         exclude group:'com.android.support'
     }
-    //debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 }

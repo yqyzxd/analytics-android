@@ -22,7 +22,7 @@ class App : Application() {
 
         val config = Config
             .newBuilder()
-            .saveCompletedEvent(true)
+            .saveCompletedEvent(false)
             .userProvider(object : IProvider<String> {
                 override fun provide(): String {
                     return "61266"

@@ -35,7 +35,6 @@ class MEventUploader(private val context:Context,
         mUploading= true
         mScope.launch {
             withContext(Dispatchers.IO){
-                val db= MEventDatabase.getInstance(context)
                 try {
                     val events=mEventDao.findByState(MEventState.READY.ordinal)
                     if (events.isNotEmpty()){
@@ -45,7 +44,7 @@ class MEventUploader(private val context:Context,
                         mEventDao.update(*events.toTypedArray())
 
                         val response=realUploader.upload(events)
-                        logger.d("MEventDispatcher","MEventUploader upload return code :${response.code}")
+                        logger.d("MEventDispatcher","MEventUploader upload return code :${response.code} event size:${events.size}")
 
                         events.forEach { e->
                             e.state = MEventState.DONE.value
@@ -62,19 +61,6 @@ class MEventUploader(private val context:Context,
                     e.printStackTrace()
                     logger.d("MEventUploader upload err occur :",e)
                 }finally {
-                    try {
-                        /**
-                         * java.lang.IllegalStateException
-                            Cannot perform this operation because there is no current transaction.
-                         */
-                        if (db.inTransaction()){
-                            db.endTransaction()
-                        }
-                    }catch (ex:Exception){
-                        ex.printStackTrace()
-                    }
-
-
                     mUploading= false
                 }
 
