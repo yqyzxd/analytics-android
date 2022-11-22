@@ -1,10 +1,7 @@
 package com.wind.analytics.impl
 
 import android.content.Context
-import com.wind.analytics.MEventDao
-import com.wind.analytics.MEventDatabase
-import com.wind.analytics.MEventState
-import com.wind.analytics.Queue
+import com.wind.analytics.*
 import com.wind.analytics.interfaces.IUploader
 import com.wind.mlog.ALog
 import kotlinx.coroutines.*
@@ -20,10 +17,14 @@ import kotlinx.coroutines.*
  *  <author> <time> <version> <desc>
  *
  */
-class MEventUploader(private val context:Context, private val realUploader: IUploader, private val saveCompletedEvent:Boolean,private val logger: ALog) :
+class MEventUploader(private val context:Context,
+                     private val mEventDao:SynchronizedDao,
+                     private val realUploader: IUploader,
+                     private val saveCompletedEvent:Boolean,
+                     private val logger: ALog) :
     Queue.OnEventListener {
     private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    private val mEventDao: MEventDao = MEventDatabase.getInstance(context).eventDao()
+   // private val mEventDao: MEventDao = MEventDatabase.getInstance(context).eventDao()
     private var mUploading = false
 
 
@@ -36,7 +37,6 @@ class MEventUploader(private val context:Context, private val realUploader: IUpl
             withContext(Dispatchers.IO){
                 val db= MEventDatabase.getInstance(context)
                 try {
-                    db.beginTransaction()
                     val events=mEventDao.findByState(MEventState.READY.ordinal)
                     if (events.isNotEmpty()){
                         events.forEach { e->
@@ -58,7 +58,6 @@ class MEventUploader(private val context:Context, private val realUploader: IUpl
                         }
 
                     }
-                    db.setTransactionSuccessful()
                 }catch (e:Exception){
                     e.printStackTrace()
                     logger.d("MEventUploader upload err occur :",e)

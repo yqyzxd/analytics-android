@@ -24,7 +24,7 @@ import kotlinx.coroutines.*
 class MEventDispatcher(private val application: Application,private val mConfig: Config) : Ticker.OnIntervalListener {
     private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-    private val mDao: MEventDao = MEventDatabase.getInstance(application.applicationContext).eventDao()
+    //private val mDao: MEventDao = MEventDatabase.getInstance(application.applicationContext).eventDao()
 
     private val mKeyMap = mutableMapOf<String, Int>()
 
@@ -37,8 +37,8 @@ class MEventDispatcher(private val application: Application,private val mConfig:
     private val mQueue = Queue
 
     private var mLogger: ALog = MLog()
-
-    private val mEventUploader = MEventUploader(application.applicationContext,mConfig.uploader,mConfig.saveCompletedEvent,mLogger)
+    private val mDao:SynchronizedDao = SynchronizedDao(MEventDatabase.getInstance(application.applicationContext).eventDao())
+    private val mEventUploader = MEventUploader(application.applicationContext,mDao,mConfig.uploader,mConfig.saveCompletedEvent,mLogger)
     private val mActivityLifecycleCallback = ActivityLifecycleCallback(application)
 
     init {
@@ -117,11 +117,11 @@ class MEventDispatcher(private val application: Application,private val mConfig:
                 }
             }
             //检查是否大于
-            var count = mDao.countByState(MEventState.READY.value)
+           /* var count = mDao.countByState(MEventState.READY.value)
             if (count > mConfig.threshold) {
                 //上传
                 mQueue.enqueue(Queue.EventType.UPLOAD)
-            }
+            }*/
         }
     }
 
