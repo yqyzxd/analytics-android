@@ -19,21 +19,22 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
+        val enabled = true
         val config = Config
             .newBuilder()
-            .saveCompletedEvent(false)
+            .saveCompletedEvent(true)
             .userProvider(object : IProvider<String> {
                 override fun provide(): String {
                     return "61266"
                 }
             })
+            .enabled(enabled)
             .uploader(EventUploader())
             .build()
         MEvent.install(this, config)
 
 
-
-        MEvent.openDebug()
+        if (enabled)
+            MEvent.openDebug()
     }
 }

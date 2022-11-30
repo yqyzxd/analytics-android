@@ -13,68 +13,118 @@ import androidx.room.*
  *  <author> <time> <version> <desc>
  *
  */
-class SynchronizedDao constructor(private val dao:MEventDao) {
+class SynchronizedDao constructor(private val dao: MEventDao) {
 
-    fun findAll():List<MEventEntity>{
-        synchronized(this){
-            return  dao.findAll()
+    fun findAll(): List<MEventEntity> {
+        synchronized(this) {
+            try {
+                return dao.findAll()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return mutableListOf()
         }
     }
 
-    fun findByState(state:Int):List<MEventEntity>{
-        synchronized(this){
-            return dao.findByState(state)
+    fun findByState(state: Int): List<MEventEntity> {
+        synchronized(this) {
+            try {
+                return dao.findByState(state)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return mutableListOf()
         }
     }
 
-    fun findLimit(count:Int):List<MEventEntity>{
-        synchronized(this){
-            return dao.findLimit(count)
-        }
-    }
-
-
-    fun findById(id:Int):MEventEntity?{
-        synchronized(this){
-            return dao.findById(id)
-        }
-    }
-
-    fun insert(event: MEventEntity) :Long{
-        synchronized(this){
-            return dao.insert(event)
-        }
-    }
-
-    fun delete(vararg events: MEventEntity){
-        synchronized(this){
-            return dao.delete(*events)
-        }
-    }
-
-    fun deleteCompleteEvents(){
-        synchronized(this){
-            dao.deleteCompleteEvents()
-        }
-    }
-
-    fun count():Int{
-        synchronized(this){
-           return dao.count()
+    fun findLimit(count: Int): List<MEventEntity> {
+        synchronized(this) {
+            try {
+                return dao.findLimit(count)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return mutableListOf()
         }
     }
 
 
-    fun countByState(state:Int):Int{
-        synchronized(this){
-            return dao.countByState(state)
+    fun findById(id: Int): MEventEntity? {
+        synchronized(this) {
+            try {
+                return dao.findById(id)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return null
+        }
+    }
+
+    fun insert(event: MEventEntity): Long {
+        synchronized(this) {
+            try {
+                return dao.insert(event)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return 0
+        }
+    }
+
+    fun delete(vararg events: MEventEntity) {
+        synchronized(this) {
+            try {
+                return dao.delete(*events)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+    }
+
+    fun deleteCompleteEvents() {
+        synchronized(this) {
+            try {
+                dao.deleteCompleteEvents()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+    }
+
+    fun count(): Int {
+        synchronized(this) {
+            try {
+                return dao.count()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return 0
         }
     }
 
 
-    fun update(vararg events: MEventEntity):Int{
-        synchronized(this){
-           return dao.update(*events)
+    fun countByState(state: Int): Int {
+        synchronized(this) {
+            try {
+                return dao.countByState(state)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return 0
+        }
+    }
+
+
+    fun update(vararg events: MEventEntity): Int {
+        synchronized(this) {
+            try {
+                return dao.update(*events)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return 0
         }
     }
 
